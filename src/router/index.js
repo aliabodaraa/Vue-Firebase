@@ -6,7 +6,7 @@ import EditEmployee from '../components/EditEmployee'
 
 import { createRouter, createWebHistory } from "vue-router"
 
-import { getAuth } from 'firebase/auth'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 const routeInfos = [
     //   {
@@ -55,12 +55,21 @@ const routeInfos = [
 ]
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes: routeInfos
-})
-router.beforeEach((to, from, next) => { //prevent guest access to feed page
+        history: createWebHistory(),
+        routes: routeInfos
+    })
+    //if i was in feed and try relaod i treat as un loginin then it redirect me to root with alert to solve this issue we will write the following code:
+const getCurrentUser = () => {
+    return new Promise((resolve, reject) => {
+        const removeListerner = onAuthStateChanged(getAuth(), (user) => {
+            removeListerner();
+            resolve(user);
+        }, reject);
+    });
+}
+router.beforeEach(async(to, from, next) => { //prevent guest access to feed page
     if (to.matched.some((record) => record.meta.requiresAuth)) {
-        if (getAuth().currentUser) {
+        if (await getCurrentUser()) {
             next();
         } else {
             alert("You Don't Have access");

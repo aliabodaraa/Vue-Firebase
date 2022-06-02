@@ -1,7 +1,7 @@
 //import HelloWorld from '@/components/HelloWorld'
 import Dashboard from '../components/Dashboard'
 import NewEmployee from '../components/NewEmployee'
-//import ViewEmployee from '../components/ViewEmployee'
+import ViewEmployee from '../components/ViewEmployee'
 import EditEmployee from '../components/EditEmployee'
 
 import { createRouter, createWebHistory } from "vue-router"
@@ -29,11 +29,11 @@ const routeInfos = [
         name: 'edit-employee',
         component: EditEmployee
     },
-    // {
-    //     path: '/:employee_id',
-    //     name: 'view-employee',
-    //     component: ViewEmployee
-    // },
+    {
+        path: '/:employee_id',
+        name: 'view-employee',
+        component: ViewEmployee
+    },
     {
         path: "/sign-up",
         component: () =>
@@ -72,10 +72,12 @@ router.beforeEach(async(to, from, next) => { //prevent guest access to feed page
         if (await getCurrentUser()) {
             next();
         } else {
+            console.log("You Don't Have access")
             alert("You Don't Have access");
-            next("/")
+            next("/");
         }
-    } else {
+    } else { //includes all routes theat have not requiresAuth then will prevent access if you are not auth
+        //alert("try access");
         next();
     }
 })
